@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Réserver un studio — Ça Part En Live Studios</title>
+<meta name="robots" content="noindex, follow">
+<link rel="icon" href="assets/img/logo-capartenlive.png">
+<style>
+  @font-face {
+    font-family: 'Schibsted Grotesk';
+    font-style: normal;
+    font-weight: 400 800;
+    font-display: swap;
+    src: url("assets/fonts/schibsted-grotesk-normal-latin.woff2") format('woff2');
+  }
+  @font-face {
+    font-family: 'Schibsted Grotesk';
+    font-style: italic;
+    font-weight: 400 800;
+    font-display: swap;
+    src: url("assets/fonts/schibsted-grotesk-italic-latin.woff2") format('woff2');
+  }
+  @font-face {
+    font-family: 'Newsreader';
+    font-style: italic;
+    font-weight: 400 600;
+    font-display: swap;
+    src: url("assets/fonts/newsreader-italic-latin.woff2") format('woff2');
+  }
+
+  :root {
+    --bg: #F2EBDD;
+    --bg-soft: #FBF8F1;
+    --dark: #16120D;
+    --ink: #1A1611;
+    --muted: #8a8170;
+    --text: #6b6353;
+    --line: rgba(26, 22, 17, .1);
+    --gold: #9A6A14;
+    --gold-light: #E8C766;
+    --font-sans: 'Schibsted Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-serif: 'Newsreader', serif;
+    --radius-lg: 22px;
+    --radius-md: 14px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--ink);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+
+  /* ---- Header / footer (identiques au reste du site) ---- */
+  .site-header {
+    background: var(--dark);
+    padding: 18px 6vw;
+  }
+  .site-header__inner {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo { display: flex; align-items: center; text-decoration: none; }
+  .logo img { width: 56px; height: 56px; display: block; filter: drop-shadow(0 6px 12px rgba(0, 0, 0, .4)); }
+  .back-link {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e9e3d8;
+    text-decoration: none;
+  }
+  .back-link:hover { color: #fff; }
+
+  .site-footer {
+    background: #100d09;
+    color: var(--muted);
+    padding: 22px 6vw;
+    margin-top: 60px;
+  }
+  .site-footer__inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  /* ---- Page header ---- */
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 56px 6vw 90px; }
+  .kicker {
+    font-size: 13px;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    margin: 0 0 18px;
+  }
+  h1 {
+    font-weight: 700;
+    font-size: clamp(30px, 4vw, 44px);
+    line-height: 1.1;
+    letter-spacing: -.02em;
+    margin: 0 0 12px;
+    color: var(--ink);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+
+  }
+  h1 .accent {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--gold-light);
+  }
+  .sub { color: var(--text); font-size: 17px; line-height: 1.6; margin: 0 0 28px; max-width: 60ch; }
+
+  .banner {
+    background: #fff;
+    border-left: 3px solid var(--gold);
+    border-radius: var(--radius-md);
+    box-shadow: 0 18px 40px -28px rgba(26, 22, 17, .35);
+    padding: 16px 20px;
+    font-size: 13.5px;
+    color: var(--text);
+    margin-bottom: 30px;
+  }
+  .banner b { color: var(--ink); }
+
+  /* ---- Layout ---- */
+  .grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 22px; align-items: start; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: 24px 26px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 2px rgba(26, 22, 17, .04), 0 26px 50px -32px rgba(26, 22, 17, .3);
+  }
+  .card h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: .18em;
+    color: var(--muted);
+    font-weight: 700;
+    margin: 0 0 16px;
+  }
+
+  /* ---- Days / slots ---- */
+  .days { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
+  .day {
+    flex: 0 0 auto;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 999px;
+    padding: 9px 16px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    text-transform: capitalize;
+    color: var(--text);
+    transition: transform .15s ease, background .15s ease, color .15s ease;
+  }
+  .day:hover { transform: translateY(-1px); }
+  .day.active { border-color: var(--dark); background: var(--dark); color: #fff; font-weight: 700; }
+
+  .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; margin-top: 14px; }
+  .slot {
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 999px;
+    padding: 10px 0;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    text-align: center;
+    transition: transform .15s ease, background .15s ease, color .15s ease;
+  }
+  .slot:hover:not(.busy) { transform: translateY(-1px); }
+  .slot.busy { opacity: .35; cursor: not-allowed; text-decoration: line-through; }
+  .slot.active { border-color: var(--gold); background: var(--gold); color: #fff; font-weight: 700; }
+
+  /* ---- Rows / fields ---- */
+  label.row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+  }
+  label.row:last-child { border-bottom: none; }
+
+  select, input[type=number] {
+    font: inherit;
+    font-size: 14px;
+    padding: 9px 12px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+  }
+
+  .opt { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+  .opt:last-child { border-bottom: none; }
+  .opt small { color: var(--muted); display: block; font-size: 12.5px; margin-top: 2px; }
+  .qty { display: flex; align-items: center; gap: 10px; }
+  .qty button {
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 999px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 16px;
+    color: var(--ink);
+    transition: background .15s ease;
+  }
+  .qty button:hover { background: var(--bg); }
+
+  .field { display: grid; gap: 10px; }
+  .field input {
+    font: inherit;
+    font-size: 15px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+  }
+  .field input::placeholder { color: var(--muted); }
+
+  /* ---- Cart ---- */
+  .cart-line { display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0; color: var(--text); }
+  .cart-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 19px;
+    font-weight: 800;
+    color: var(--ink);
+    border-top: 2px solid var(--ink);
+    margin-top: 10px;
+    padding-top: 12px;
+  }
+
+  .pay {
+    width: 100%;
+    margin-top: 18px;
+    padding: 15px;
+    border: none;
+    border-radius: 999px;
+    background: var(--dark);
+    color: #fff;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .15s ease, opacity .15s ease;
+  }
+  .pay:hover:not(:disabled) { transform: translateY(-1px); opacity: .92; }
+  .pay:disabled { opacity: .4; cursor: not-allowed; }
+
+  .note { font-size: 12.5px; color: var(--muted); margin-top: 12px; line-height: 1.6; }
+  .ok {
+    background: #f2f8ee;
+    border: 1px solid #cfe3bd;
+    color: #3f5c2a;
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    font-size: 13.5px;
+    margin-top: 14px;
+    line-height: 1.5;
+  }
+  .err { color: #b3432f; font-size: 13px; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="index.html" class="logo" aria-label="Ça Part En Live Studios - Accueil">
+        <img src="assets/img/logo-capartenlive.png" alt="Ça Part En Live Studios" width="320" height="320">
+      </a>
+      <a href="index.html" class="back-link">← Retour à l'accueil</a>
+    </div>
+  </header>
+
+<div class="wrap">
+  <p class="kicker">Réservation en ligne</p>
+  <h1>Réserver le <span class="accent">Studio Podcast</span></h1>
+  <p class="sub">Choisissez votre créneau, votre formule et vos options. Paiement sécurisé par carte.</p>
+  <div class="banner">Page de <b>référence fonctionnelle</b> (design personnalisé). Le parcours de réservation redirige vers Stripe Checkout ; la création de la session de paiement doit être implémentée côté serveur (clé secrète Stripe).</div>
+
+  <div class="grid">
+    <div>
+      <!-- Créneau -->
+      <div class="card">
+        <h2>1 · Créneau</h2>
+        <div class="days" id="days"></div>
+        <div class="slots" id="slots"></div>
+        <div id="durationWrap" style="margin-top:14px; display:none;">
+          <label class="row"><span>Durée de location</span>
+            <select id="hours"></select>
+          </label>
+        </div>
+      </div>
+
+      <!-- Formule + participants -->
+      <div class="card">
+        <h2>2 · Formule &amp; participants</h2>
+        <div id="formules"></div>
+        <label class="row"><span>Nombre de personnes présentes</span>
+          <select id="participants"><option>1</option><option>2</option><option>3</option></select>
+        </label>
+      </div>
+
+      <!-- Options -->
+      <div class="card">
+        <h2>3 · Options</h2>
+        <div id="options"></div>
+      </div>
+
+      <!-- Coordonnées -->
+      <div class="card">
+        <h2>4 · Vos coordonnées</h2>
+        <div class="field">
+          <input id="name" placeholder="Nom et prénom" />
+          <input id="email" type="email" placeholder="Email" />
+          <input id="phone" placeholder="Téléphone" />
+          <input id="company_extra" style="display:none" tabindex="-1" autocomplete="off" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Panier -->
+    <div>
+      <div class="card" style="position:sticky; top:16px;">
+        <h2>Votre panier</h2>
+        <div id="cart"></div>
+        <div class="cart-total"><span>Total TTC</span><span id="total">0,00 €</span></div>
+        <button class="pay" id="pay" disabled>Réserver &amp; payer</button>
+        <div class="err" id="err"></div>
+        <div id="result"></div>
+        <p class="note">Le créneau est tenu 20 minutes le temps du paiement. TVA 20 % incluse.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <span>© <span id="year">2026</span> Ça part en live Studios. Tous droits réservés.</span>
+    </div>
+  </footer>
+
+<script>
+const API = location.origin + '/api/studio-booking'; // ← le web master remplacera par l'URL absolue du CRM
+const fmt = (n) => (Number(n)||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €';
+let CAT = null, DAYS = [], sel = { day:null, startAt:null, startHour:null, hours:1, formule:null, participants:1, options:{} };
+
+document.getElementById('year').textContent = new Date().getFullYear();
+
+async function boot(){
+  CAT = await (await fetch(API + '?action=catalog')).json();
+  renderFormules(); renderOptions();
+  const av = await (await fetch(API)).json();
+  DAYS = av.days || [];
+  renderDays();
+  document.getElementById('participants').onchange = (e)=>{ sel.participants = +e.target.value; };
+  document.getElementById('hours').onchange = (e)=>{ sel.hours = +e.target.value; refresh(); };
+  document.getElementById('pay').onclick = doHold;
+}
+
+function renderDays(){
+  const el = document.getElementById('days'); el.innerHTML='';
+  DAYS.forEach((d,i)=>{
+    const b = document.createElement('button'); b.className='day'+(i===0?' active':'');
+    const dt = new Date(d.date+'T12:00:00');
+    b.innerHTML = dt.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'});
+    b.onclick = ()=>{ document.querySelectorAll('.day').forEach(x=>x.classList.remove('active')); b.classList.add('active'); showDay(d); };
+    el.appendChild(b);
+  });
+  if(DAYS[0]) showDay(DAYS[0]);
+}
+function showDay(d){
+  sel.day = d; sel.startAt=null; sel.startHour=null;
+  const el = document.getElementById('slots'); el.innerHTML='';
+  d.slots.forEach(s=>{
+    const b = document.createElement('button'); b.className='slot'+(s.free?'':' busy');
+    b.textContent = s.label;
+    if(s.free) b.onclick = ()=> pickSlot(d, s, b);
+    el.appendChild(b);
+  });
+  document.getElementById('durationWrap').style.display='none';
+  refresh();
+}
+function pickSlot(d, s, btn){
+  document.querySelectorAll('.slot').forEach(x=>x.classList.remove('active')); btn.classList.add('active');
+  sel.startAt = s.startAt; sel.startHour = +s.label.slice(0,2);
+  // durée max = nb de créneaux libres consécutifs à partir du départ
+  const idx = d.slots.findIndex(x=>x.startAt===s.startAt);
+  let maxH=0; for(let i=idx;i<d.slots.length && d.slots[i].free;i++) maxH++;
+  const hs = document.getElementById('hours'); hs.innerHTML='';
+  for(let h=1;h<=maxH;h++){ const o=document.createElement('option'); o.value=h; o.textContent=h+' h'; hs.appendChild(o); }
+  sel.hours = 1; document.getElementById('durationWrap').style.display='block';
+  refresh();
+}
+function renderFormules(){
+  const el = document.getElementById('formules'); el.innerHTML='';
+  Object.entries(CAT.formules).forEach(([key,f],i)=>{
+    const id='f_'+key;
+    const row=document.createElement('label'); row.className='row';
+    row.innerHTML = `<span><input type="radio" name="formule" id="${id}" ${i===0?'checked':''}> ${f.label}</span><b>${fmt(f.prix_ttc)} / h</b>`;
+    row.querySelector('input').onchange=()=>{ sel.formule=key; refresh(); };
+    el.appendChild(row);
+    if(i===0) sel.formule=key;
+  });
+}
+function renderOptions(){
+  const el = document.getElementById('options'); el.innerHTML='';
+  Object.entries(CAT.options).forEach(([key,o])=>{
+    sel.options[key]=0;
+    const wrap=document.createElement('div'); wrap.className='opt';
+    wrap.innerHTML = `<div>${o.label}<small>${fmt(o.prix_ttc)}${o.max?` · max ${o.max}`:''}</small></div>`;
+    const q=document.createElement('div'); q.className='qty';
+    const minus=document.createElement('button'); minus.textContent='−';
+    const val=document.createElement('span'); val.textContent='0'; val.style.minWidth='18px'; val.style.textAlign='center';
+    const plus=document.createElement('button'); plus.textContent='+';
+    minus.onclick=()=>{ sel.options[key]=Math.max(0,sel.options[key]-1); val.textContent=sel.options[key]; refresh(); };
+    plus.onclick=()=>{ const m=o.max||99; sel.options[key]=Math.min(m,sel.options[key]+1); val.textContent=sel.options[key]; refresh(); };
+    q.append(minus,val,plus); wrap.appendChild(q); el.appendChild(wrap);
+  });
+}
+function refresh(){
+  const cart = document.getElementById('cart'); cart.innerHTML=''; let total=0;
+  if(sel.formule && sel.startAt){
+    const f=CAT.formules[sel.formule]; const lt=f.prix_ttc*sel.hours; total+=lt;
+    cart.innerHTML += `<div class="cart-line"><span>${f.label} × ${sel.hours} h</span><span>${fmt(lt)}</span></div>`;
+  }
+  Object.entries(sel.options).forEach(([key,q])=>{ if(q>0){ const o=CAT.options[key]; const lt=o.prix_ttc*q; total+=lt;
+    cart.innerHTML += `<div class="cart-line"><span>${o.label} × ${q}</span><span>${fmt(lt)}</span></div>`; }});
+  document.getElementById('total').textContent = fmt(total);
+  const ready = sel.startAt && sel.formule && total>0;
+  document.getElementById('pay').disabled = !ready;
+}
+async function doHold(){
+  document.getElementById('err').textContent=''; document.getElementById('result').innerHTML='';
+  const btn=document.getElementById('pay'); btn.disabled=true; btn.textContent='Réservation…';
+  const options = Object.entries(sel.options).filter(([,q])=>q>0).map(([key,qty])=>({key,qty}));
+  const body = {
+    action:'hold', startAt:sel.startAt, hours:sel.hours, participants:+document.getElementById('participants').value,
+    formule:sel.formule, options,
+    name:document.getElementById('name').value.trim(), email:document.getElementById('email').value.trim(),
+    phone:document.getElementById('phone').value.trim(), company_extra:document.getElementById('company_extra').value,
+  };
+  try{
+    const r = await fetch(API,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    const d = await r.json();
+    if(!r.ok){ document.getElementById('err').textContent = d.error || 'Erreur'; btn.disabled=false; btn.textContent='Réserver & payer'; return; }
+    document.getElementById('result').innerHTML =
+      `<div class="ok"><b>Créneau réservé ✔</b><br>Réf. ${d.bookingId} — Montant : <b>${fmt(d.amount_ttc)}</b><br>
+       <small>Redirection vers le paiement sécurisé…</small></div>`;
+    btn.textContent = 'Redirection…';
+    await goToStripeCheckout(d.bookingId, d.amount_ttc, body.email);
+  }catch(e){ document.getElementById('err').textContent='Connexion impossible'; btn.disabled=false; btn.textContent='Réserver & payer'; }
+}
+
+/**
+ * Demande au backend (CRM) de créer une session Stripe Checkout, puis redirige le
+ * client vers la page de paiement hébergée par Stripe.
+ *
+ * ⚠️ La clé secrète Stripe ne doit JAMAIS être utilisée côté navigateur. C'est le
+ * backend qui doit appeler l'API Stripe (POST /v1/checkout/sessions) avec la clé
+ * secrète, et renvoyer uniquement l'URL de la session créée.
+ *
+ * Contrat d'API attendu — POST {API} avec :
+ *   { action: 'create_checkout_session', bookingId, amount_ttc, email }
+ * Réponse attendue :
+ *   { url: 'https://checkout.stripe.com/pay/cs_...' }
+ *
+ * Le backend doit créer la session avec, à minima :
+ *   - line_items basés sur amount_ttc (en centimes, currency 'eur')
+ *   - metadata: { bookingId }
+ *   - success_url: `${origin}/reservation.html?checkout=success&booking=${bookingId}`
+ *   - cancel_url:  `${origin}/reservation.html?checkout=cancelled&booking=${bookingId}`
+ */
+async function goToStripeCheckout(bookingId, amount_ttc, email){
+  const btn = document.getElementById('pay');
+  try{
+    const r = await fetch(API, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'create_checkout_session', bookingId, amount_ttc, email }),
+    });
+    const d = await r.json();
+    if(!r.ok || !d.url){
+      document.getElementById('err').textContent = d.error || 'Impossible de démarrer le paiement Stripe pour le moment.';
+      btn.disabled = false; btn.textContent = 'Réserver & payer';
+      return;
+    }
+    window.location.href = d.url; // Redirection vers Stripe Checkout
+  }catch(e){
+    document.getElementById('err').textContent = 'Connexion au paiement impossible.';
+    btn.disabled = false; btn.textContent = 'Réserver & payer';
+  }
+}
+
+/**
+ * Au retour de Stripe Checkout (success_url / cancel_url), affiche le résultat.
+ */
+function handleStripeReturn(){
+  const params = new URLSearchParams(window.location.search);
+  const checkout = params.get('checkout');
+  if(!checkout) return;
+
+  const booking = params.get('booking') || '';
+  if(checkout === 'success'){
+    document.getElementById('result').innerHTML =
+      `<div class="ok"><b>Paiement confirmé ✔</b><br>Réf. ${booking} — Un email de confirmation vous a été envoyé.</div>`;
+    document.getElementById('pay').textContent = 'Réservé';
+    document.getElementById('pay').disabled = true;
+  } else if(checkout === 'cancelled'){
+    document.getElementById('err').textContent = 'Paiement annulé — votre créneau n\'a pas été confirmé. Vous pouvez réessayer.';
+  }
+  // Nettoie l'URL pour éviter de ré-afficher ce message après un rafraîchissement.
+  params.delete('checkout'); params.delete('booking');
+  const clean = window.location.pathname + (params.toString() ? `?${params}` : '');
+  window.history.replaceState({}, '', clean);
+}
+
+handleStripeReturn();
+boot();
+</script>
+</body>
+</html>
