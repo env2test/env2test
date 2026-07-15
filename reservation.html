@@ -304,7 +304,7 @@
   <p class="kicker">Réservation en ligne</p>
   <h1>Réserver le <span class="accent">Studio Podcast</span></h1>
   <p class="sub">Choisissez votre créneau, votre formule et vos options. Paiement sécurisé par carte.</p>
-  <div class="banner">Page de <b>référence fonctionnelle</b> (design personnalisé). Le parcours de réservation redirige vers Stripe Checkout ; la création de la session de paiement doit être implémentée côté serveur (clé secrète Stripe).</div>
+  <div class="banner"><b>Paiement 100 % sécurisé</b> par carte bancaire via Stripe. Votre créneau est tenu 20 minutes, le temps de finaliser le règlement.</div>
 
   <div class="grid">
     <div>
@@ -369,7 +369,8 @@
   </footer>
 
 <script>
-const API = location.origin + '/api/studio-booking'; // ← le web master remplacera par l'URL absolue du CRM
+const API = 'https://crm-global-five.vercel.app/api/studio-booking'; // Source de vérité de l'agenda (catalogue, dispos, hold) — le paiement Stripe n'est PAS géré par le CRM, voir CHECKOUT_API ci-dessous
+const CHECKOUT_API = '[URL_DU_BACKEND_OVH]/create-checkout.php'; // ex: https://api.capartenlivestudios.fr/create-checkout.php — voir dossier /backend
 const fmt = (n) => (Number(n)||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €';
 let CAT = null, DAYS = [], sel = { day:null, startAt:null, startHour:null, hours:1, formule:null, participants:1, options:{} };
 
@@ -481,31 +482,20 @@ async function doHold(){
 }
 
 /**
- * Demande au backend (CRM) de créer une session Stripe Checkout, puis redirige le
- * client vers la page de paiement hébergée par Stripe.
+ * Demande au backend du site (/backend/create-checkout.php, hébergé sur OVH — pas
+ * le CRM, qui n'implémente pas cette étape) de créer une session Stripe Checkout,
+ * puis redirige vers Stripe.
  *
- * ⚠️ La clé secrète Stripe ne doit JAMAIS être utilisée côté navigateur. C'est le
- * backend qui doit appeler l'API Stripe (POST /v1/checkout/sessions) avec la clé
- * secrète, et renvoyer uniquement l'URL de la session créée.
- *
- * Contrat d'API attendu — POST {API} avec :
- *   { action: 'create_checkout_session', bookingId, amount_ttc, email }
- * Réponse attendue :
- *   { url: 'https://checkout.stripe.com/pay/cs_...' }
- *
- * Le backend doit créer la session avec, à minima :
- *   - line_items basés sur amount_ttc (en centimes, currency 'eur')
- *   - metadata: { bookingId }
- *   - success_url: `${origin}/reservation.html?checkout=success&booking=${bookingId}`
- *   - cancel_url:  `${origin}/reservation.html?checkout=cancelled&booking=${bookingId}`
+ * ⚠️ La clé secrète Stripe ne doit JAMAIS être utilisée côté navigateur — c'est
+ * exactement ce que fait create-checkout.php, qui renvoie uniquement l'URL Stripe.
  */
 async function goToStripeCheckout(bookingId, amount_ttc, email){
   const btn = document.getElementById('pay');
   try{
-    const r = await fetch(API, {
+    const r = await fetch(CHECKOUT_API, {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'create_checkout_session', bookingId, amount_ttc, email }),
+      body: JSON.stringify({ bookingId, amount_ttc, email }),
     });
     const d = await r.json();
     if(!r.ok || !d.url){
@@ -531,7 +521,7 @@ function handleStripeReturn(){
   const booking = params.get('booking') || '';
   if(checkout === 'success'){
     document.getElementById('result').innerHTML =
-      `<div class="ok"><b>Paiement confirmé ✔</b><br>Réf. ${booking} — Un email de confirmation vous a été envoyé.</div>`;
+      `<div class="ok"><b>Paiement confirmé ✔</b><br>Réf. ${booking} — Un email et un SMS de confirmation vous ont été envoyés.</div>`;
     document.getElementById('pay').textContent = 'Réservé';
     document.getElementById('pay').disabled = true;
   } else if(checkout === 'cancelled'){
